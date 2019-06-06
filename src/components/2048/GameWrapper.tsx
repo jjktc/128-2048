@@ -162,150 +162,74 @@ const GameWrapper: React.SFC<IProps> = ({ open = false, classes }) => {
     );
   };
 
-  const shiftUp = React.useCallback(() => {
-    const tiles_ = tiles.slice(0);
+  const shift = React.useCallback(
+    (x_: number, y_: number) => {
+      const tiles_ = tiles.slice(0);
 
-    for (let i = 0; i < tiles_.length; i++) {
-      const pos = convert1To2(i);
-      const x = pos.x;
-      const y = pos.y;
+      for (let i = 0; i < tiles_.length; i++) {
+        const pos = convert1To2(i);
+        const x = pos.x;
+        const y = pos.y;
 
-      let currentIndex = i;
+        let currentIndex = i;
 
-      if (tiles_[currentIndex].value > 0) {
-        for (let a = y - 1; a >= 0; a--) {
-          const indexAbove = convert2To1(x, a);
+        if (tiles_[currentIndex].value > 0) {
+          let start = 0;
+          let offset = x_ + y_;
+          let condition = (a_: number, b_: number, offset_: number) => {
+            if (offset_ === 1) {
+            }
+            return offset_ === 1 ? Boolean(a_ < b_) : Boolean(a_ >= b_);
+          };
 
-          if (tiles_[indexAbove].value === 0) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          } else if (tiles_[indexAbove].value === tiles_[currentIndex].value) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value * 2;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
+          let target = offset === 1 ? 4 : 0;
+
+          if (x_ !== 0) {
+            start = x + x_;
+          }
+          if (y_ !== 0) {
+            start = y + y_;
+          }
+
+          for (let a = start; condition(a, target, offset); a += offset) {
+            const indexAbove = convert2To1(x_ === 0 ? x : a, y_ === 0 ? y : a);
+
+            if (tiles_[indexAbove].value === 0) {
+              tiles_[indexAbove].value = tiles_[currentIndex].value;
+              tiles_[currentIndex].value = 0;
+              currentIndex = indexAbove;
+            } else if (
+              tiles_[indexAbove].value === tiles_[currentIndex].value
+            ) {
+              tiles_[indexAbove].value = tiles_[currentIndex].value * 2;
+              tiles_[currentIndex].value = 0;
+              currentIndex = indexAbove;
+            }
           }
         }
       }
-    }
 
-    placeRandomTile(tiles_);
+      placeRandomTile(tiles_);
 
-    setTiles(tiles_);
-  }, []);
-
-  const shiftDown = React.useCallback(() => {
-    const tiles_ = tiles.slice(0);
-
-    for (let i = 0; i < tiles_.length; i++) {
-      const pos = convert1To2(i);
-      const x = pos.x;
-      const y = pos.y;
-
-      let currentIndex = i;
-
-      if (tiles_[currentIndex].value > 0) {
-        for (let a = y + 1; a < 4; a++) {
-          const indexAbove = convert2To1(x, a);
-
-          if (tiles_[indexAbove].value === 0) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          } else if (tiles_[indexAbove].value === tiles_[currentIndex].value) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value * 2;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          }
-        }
-      }
-    }
-
-    placeRandomTile(tiles_);
-
-    setTiles(tiles_);
-  }, []);
-
-  const shiftLeft = React.useCallback(() => {
-    const tiles_ = tiles.slice(0);
-
-    for (let i = 0; i < tiles_.length; i++) {
-      const pos = convert1To2(i);
-      const x = pos.x;
-      const y = pos.y;
-
-      let currentIndex = i;
-
-      if (tiles_[currentIndex].value > 0) {
-        for (let a = x - 1; a >= 0; a--) {
-          const indexAbove = convert2To1(a, y);
-
-          if (tiles_[indexAbove].value === 0) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          } else if (tiles_[indexAbove].value === tiles_[currentIndex].value) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value * 2;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          }
-        }
-      }
-    }
-
-    placeRandomTile(tiles_);
-
-    setTiles(tiles_);
-  }, []);
-
-  const shiftRight = React.useCallback(() => {
-    const tiles_ = tiles.slice(0);
-
-    for (let i = 0; i < tiles_.length; i++) {
-      const pos = convert1To2(i);
-      const x = pos.x;
-      const y = pos.y;
-
-      let currentIndex = i;
-
-      if (tiles_[currentIndex].value > 0) {
-        for (let a = x + 1; a < 4; a++) {
-          const indexAbove = convert2To1(a, y);
-
-          if (tiles_[indexAbove].value === 0) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          } else if (tiles_[indexAbove].value === tiles_[currentIndex].value) {
-            tiles_[indexAbove].value = tiles_[currentIndex].value * 2;
-            tiles_[currentIndex].value = 0;
-            currentIndex = indexAbove;
-          }
-        }
-      }
-    }
-
-    placeRandomTile(tiles_);
-
-    setTiles(tiles_);
-  }, []);
+      setTiles(tiles_);
+    },
+    [tiles]
+  );
 
   const keydownListener = (event: KeyboardEvent) => {
     const key = event.key;
 
-    console.log(tiles);
-
     if (key === "ArrowUp") {
-      shiftUp();
+      shift(0, -1);
       event.preventDefault();
     } else if (key === "ArrowDown") {
-      shiftDown();
+      shift(0, 1);
       event.preventDefault();
     } else if (key === "ArrowLeft") {
-      shiftLeft();
+      shift(-1, 0);
       event.preventDefault();
     } else if (key === "ArrowRight") {
-      shiftRight();
+      shift(1, 0);
       event.preventDefault();
     }
   };
