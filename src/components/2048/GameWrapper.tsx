@@ -176,11 +176,8 @@ const GameWrapper: React.SFC<IProps> = ({ open = false, classes }) => {
         if (tiles_[currentIndex].value > 0) {
           let start = 0;
           let offset = x_ + y_;
-          let condition = (a_: number, b_: number, offset_: number) => {
-            if (offset_ === 1) {
-            }
-            return offset_ === 1 ? Boolean(a_ < b_) : Boolean(a_ >= b_);
-          };
+          let condition = (a_: number, b_: number, offset_: number) =>
+            offset_ === 1 ? Boolean(a_ < b_) : Boolean(a_ >= b_);
 
           let target = offset === 1 ? 4 : 0;
 
