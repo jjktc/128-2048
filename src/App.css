@@ -1,3 +1,5 @@
+@import "~@128technology/icons/fonts/t128.css";
+
 .App {
   text-align: center;
   position: absolute;
@@ -6,4 +8,15 @@
   left: 0;
   right: 0;
   background-color: #f6f7f9;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  position: fixed;
+  top: 0;
+  font-size: 128pt;
+  color: #0074d9;
 }
